@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GE-3 Task 1 Remedial Worksheet | Draft-1 Error Analysis</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background-color: #f1f5f9;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            color: #1e293b;
+        }
+        .worksheet-card {
+            max-width: 950px;
+            margin: 2rem auto;
+            background: #ffffff;
+            padding: 2.5rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e2e8f0;
+            position: relative;
+        }
+        .input-header {
+            border: none;
+            border-bottom: 1.5px solid #94a3b8;
+            outline: none;
+            padding: 2px 6px;
+            background: transparent;
+            width: 100%;
+        }
+        .input-header:focus {
+            border-bottom-color: #1e40af;
+        }
+        .input-correction {
+            width: 100%;
+            border: none;
+            border-bottom: 2px solid #cbd5e1;
+            outline: none;
+            padding: 6px 4px;
+            background: #f8fafc;
+            border-radius: 4px 4px 0 0;
+            font-weight: 500;
+            color: #0f172a;
+            transition: all 0.2s ease;
+        }
+        .input-correction:focus {
+            border-bottom-color: #2563eb;
+            background: #eff6ff;
+        }
+        .section-header {
+            border-left: 4px solid #1e40af;
+            background: #f8fafc;
+            padding: 0.75rem 1rem;
+            margin-bottom: 1.25rem;
+            border-radius: 0 6px 6px 0;
+        }
+        .feedback-badge {
+            display: none;
+            font-weight: 800;
+            font-size: 1.2rem;
+            margin-left: 8px;
+            vertical-align: middle;
+        }
+        .mark-correct { color: #16a34a; }
+        .mark-incorrect { color: #dc2626; }
+        
+        .answer-reveal {
+            display: none;
+            margin-top: 0.75rem;
+            padding: 0.75rem 1rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            line-height: 1.5;
+        }
+
+        #scoreModal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .score-circle {
+            background: #ffffff;
+            width: 260px;
+            height: 260px;
+            border-radius: 50%;
+            border: 14px solid #1e40af;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35);
+            animation: zoomBounce 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        @keyframes zoomBounce {
+            0% { transform: scale(0.3); opacity: 0; }
+            80% { transform: scale(1.08); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .locked-form {
+            pointer-events: none;
+        }
+        .locked-form input {
+            background-color: #f1f5f9 !important;
+            border-bottom-color: #cbd5e1 !important;
+        }
+        @media print {
+            .no-print { display: none !important; }
+            .worksheet-card { box-shadow: none; border: none; margin: 0; padding: 0.5rem; max-width: 100%; }
+            #scoreModal { position: absolute; background: none; top: 15px; right: 15px; inset: auto; display: block !important; }
+            .score-circle { width: 110px; height: 110px; border-width: 5px; box-shadow: none; }
+            .score-circle #scoreValue { font-size: 1.5rem; }
+        }
+    </style>
+</head>
+<body class="p-3 md:p-6">
+
+<!-- Big Bold Score Display Modal -->
+<div id="scoreModal" class="flex">
+    <div class="score-circle text-center">
+        <span class="text-xs uppercase tracking-widest font-bold text-gray-500 mb-1">Total Score</span>
+        <span id="scoreValue" class="text-5xl font-black text-blue-900 leading-none">0/20</span>
+        <span id="performanceLevel" class="text-xs font-semibold text-blue-700 mt-2 px-3 py-1 bg-blue-50 rounded-full">Completed</span>
+        <button onclick="document.getElementById('scoreModal').style.display='none'" class="no-print mt-3 text-xs text-slate-500 hover:text-slate-800 underline">Close</button>
+    </div>
+</div>
+
+<div class="worksheet-card" id="worksheetCard">
+    <!-- Header -->
+    <header class="border-b-2 border-slate-900 pb-4 mb-6">
+        <div class="flex justify-between items-start flex-wrap gap-2">
+            <div>
+                <span class="text-xs font-black tracking-wider uppercase px-2 py-0.5 bg-blue-100 text-blue-800 rounded">GE-3 Section-13</span>
+                <h1 class="text-xl md:text-2xl font-black text-slate-900 tracking-tight mt-1">Task 1 Bar Chart Error Correction Worksheet</h1>
+                <p class="text-xs text-slate-600 font-medium">Targeted Skill Building Based on Student Writing Errors in Draft-1</p>
+            </div>
+            <div class="text-right">
+                <span class="text-xs font-bold text-slate-400">Remedial Analysis</span>
+                <div class="font-black text-lg text-blue-900" id="headerScorePlaceholder">____ / 20</div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6 pt-4 border-t border-slate-200 text-sm">
+            <div>
+                <label class="font-bold text-slate-700">Student Name:</label>
+                <input type="text" id="studentName" placeholder="Enter your full name" class="input-header">
+            </div>
+            <div>
+                <label class="font-bold text-slate-700">Date:</label>
+                <input type="date" id="studentDate" class="input-header">
+            </div>
+        </div>
+    </header>
+
+    <div class="space-y-8">
+        <!-- ACTIVITY 1 -->
+        <section class="border border-slate-200 rounded-lg p-5 bg-white shadow-sm">
+            <div class="section-header">
+                <h2 class="font-bold text-blue-900 text-sm uppercase tracking-wider">Activity 1: Spot & Correct Static vs. Dynamic Trend Errors (Q1–Q5)</h2>
+                <p class="text-xs text-slate-600 mt-0.5">Instructions: These student sentences wrongly used time-trend verbs (<i>increased, fell, fluctuated, went up</i>) on a static country comparison chart. Rewrite each sentence using static comparison vocabulary (<i>was higher, was lowest, recorded a high figure, stood at</i>).</p>
+            </div>
+
+            <div class="space-y-5 text-sm">
+                <!-- Q1 -->
+                <div class="question-block" data-qid="1">
+                    <p class="font-medium text-slate-800">
+                        <span class="font-bold text-blue-900">1.</span> Flawed Student Draft (Murooj / Zahrah): 
+                        <span class="italic text-slate-600">"Overall, cinema attendance in Oman was going up, while in Qatar it went down during the period."</span>
+                        <span class="feedback-badge" id="fb1"></span>
+                    </p>
+                    <input type="text" id="q1" class="input-correction mt-2" placeholder="Rewrite corrected sentence here...">
+                    <div class="answer-reveal" id="rev1"></div>
+                </div>
+
+                <!-- Q2 -->
+                <div class="question-block" data-qid="2">
+                    <p class="font-medium text-slate-800">
+                        <span class="font-bold text-blue-900">2.</span> Flawed Student Draft (Khadija): 
+                        <span class="italic text-slate-600">"Music shows showed an went up during the period and reached its peak in Bahrain."</span>
+                        <span class="feedback-badge" id="fb2"></span>
+                    </p>
+                    <input type="text" id="q2" class="input-correction mt-2" placeholder="Rewrite corrected sentence here...">
+                    <div class="answer-reveal" id="rev2"></div>
+                </div>
+
+                <!-- Q3 -->
+                <div class="question-block" data-qid="3">
+                    <p class="font-medium text-slate-800">
+                        <span class="font-bold text-blue-900">3.</span> Flawed Student Draft (Nusiyba): 
+                        <span class="italic text-slate-600">"The number of people who take the cinema activity steadily increased from 3500 to 4500 between Oman and Qatar."</span>
+                        <span class="feedback-badge" id="fb3"></span>
+                    </p>
+                    <input type="text" id="q3" class="input-correction mt-2" placeholder="Rewrite corrected sentence here...">
+                    <div class="answer-reveal" id="rev3"></div>
+                </div>
+
+                <!-- Q4 -->
+                <div class="question-block" data-qid="4">
+                    <p class="font-medium text-slate-800">
+                        <span class="font-bold text-blue-900">4.</span> Flawed Student Draft (Ayah): 
+                        <span class="italic text-slate-600">"The number of people for cinema activity increased, but music shows fell slightly in Qatar."</span>
+                        <span class="feedback-badge" id="fb4"></span>
+                    </p>
+                    <input type="text" id="q4" class="input-correction mt-2" placeholder="Rewrite corrected sentence here...">
+                    <div class="answer-reveal" id="rev4"></div>
+                </div>
+
+                <!-- Q5 -->
+                <div class="question-block" data-qid="5">
+                    <p class="font-medium text-slate-800">
+                        <span class="font-bold text-blue-900">5.</span> Flawed Student Draft (Renad): 
+                        <span class="italic text-slate-600">"Overall, the percentage of Cinema and Art Gallery shows an upward trend across all countries."</span>
+                        <span class="feedback-badge" id="fb5"></span>
+                    </p>
+                    <input type="text" id="q5" class="input-correction mt-2" placeholder="Rewrite corrected sentence here...">
+                    <div class="answer-reveal" id="rev5"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ACTIVITY 2 -->
+        <section class="border border-slate-200 rounded-lg p-5 bg-white shadow-sm">
+            <div class="section-header">
+                <h2 class="font-bold text-blue-900 text-sm uppercase tracking-wider">Activity 2: Fix Headcount vs. Percentage Unit Misuse (Q6–Q10)</h2>
+                <p class="text-xs text-slate-600 mt-0.5">Instructions: The bar chart Y-axis measures headcount (<i>number of people / persons</i>), NOT percentage (%). Correct each sentence by replacing percentage / percent / rate with accurate headcount terms.</p>
+            </div>
+
+            <div class="space-y-5 text-sm">
+                <!-- Q6 -->
+                <div class="question-block" data-qid="6">
+                    <p class="font-medium text-slate-800">
+                        <span class="font-bold text-blue-900">6.</span> Flawed Student Draft (Yousaf): 
+                        <span class="italic text-slate-600">"It can be seen clearly from the chart that cinema was popular in Bahrain, with about 4,500 Percentage."</span>
+                        <span class="feedback-badge" id="fb6"></span>
+                    </p>
+                    <input type="text" id="q6" class="input-correction mt-2" placeholder="Rewrite corrected sentence here...">
+                    <div class="answer-reveal" id="rev6"></div>
+                </div>
+
+                <!-- Q7 -->
+                <div class="question-block" data-qid="7">
+                    <p class="font-medium text-slate-800">
+                        <span class="font-bold text-blue-900">7.</span> Flawed Student Draft (Sawsan): 
+                        <span class="italic text-slate-600">"The rates of people who prefer to spend their free time in Cinema are the highest in most countries."</span>
+                        <span class="feedback-badge" id="fb7"></span>
+                    </p>
+                    <input type="text" id="q7" class="input-correction mt-2" placeholder="Rewrite corrected sentence here...">
+                    <div class="answer-reveal" id="rev7"></div>
+                </div>
+
+                <!-- Q8 -->
+                <div class="question-block" data-qid="8">
+                    <p class="font-medium text-slate-800">
+                        <span class="font-bold text-blue-900">8.</span> Flawed Student Draft (Renad): 
+                        <span class="italic text-slate-600">"In Oman, cinema is higher than Art Gallery around 4,300 percent while music shows are lower by 2,000 percent."</span>
+                        <span class="feedback-badge" id="fb8"></span>
+                    </p>
+                    <input type="text" id="q8" class="input-correction mt-2" placeholder="Rewrite corrected sentence here...">
+                    <div class="answer-reveal" id="rev8"></div>
+                </div>
+
+                <!-- Q9 -->
+                <div class="question-block" data-qid="9">
+                    <p class="font-medium text-slate-800">
+                        <span class="font-bold text-blue-900">9.</span> Flawed Student Draft (Arwa): 
+                        <span class="italic text-slate-600">"In Oman, more people like to go to the cinema, and the Precent was clearly 4,300."</span>
+                        <span class="feedback-badge" id="fb9"></span>
+                    </p>
+                    <input type="text" id="q9" class="input-correction mt-2" placeholder="Rewrite corrected sentence here...">
+                    <div class="answer-reveal" id="rev9"></div>
+                </div>
+
+                <!-- Q10 -->
+                <div class="question-block" data-qid="10">
+                    <p class="font-medium text-slate-800">
+                        <span class="font-bold text-blue-900">10.</span> Flawed Student Draft (Murooj): 
+                        <span class="italic text-slate-600">"The art gallery in Bahrain went up to 5,000 percent of people."</span>
+                        <span class="feedback-badge" id="fb10"></span>
+                    </p>
+                    <input type="text" id="q10" class="input-correction mt-2" placeholder="Rewrite corrected sentence here...">
+                    <div class="answer-reveal" id="rev10"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ACTIVITY 3 -->
+        <section class="border border-slate-200 rounded-lg p-5 bg-white shadow-sm">
+            <div class="section-header">
+                <h2 class="font-bold text-blue-900 text-sm uppercase tracking-wider">Activity 3: Repair Relative Pronouns & Prepositions (Q11–Q15)</h2>
+                <p class="text-xs text-slate-600 mt-0.5">Instructions: Correct relative pronouns (use <i>who</i> for people, NOT <i>how / which</i>) and prepositions (use <i>at 4,300</i> or <i>reached 3,500</i> without <i>to</i>).</p>
+            </div>
+
+            <div class="space-y-5 text-sm">
+                <!-- Q11 -->
+                <div class="question-block" data-qid="11">
+                    <p class="font-medium text-slate-800">
+                        <span class="font-bold text-blue-900">11.</span> Flawed Student Draft (Fatma): 
+                        <span class="italic text-slate-600">"The number of persons how spend their free time in an Art Gallery was higher in Qatar."</span>
+                        <span class="feedback-badge" id="fb11"></span>
+                    </p>
+                    <input type="text" id="q11" class="input-correction mt-2" placeholder="Rewrite corrected sentence here...">
+                    <div class="answer-reveal" id="rev11"></div>
+                </div>
+
+                <!-- Q12 -->
+                <div class="question-block" data-qid="12">
+                    <p class="font-medium text-slate-800">
+                        <span class="font-bold text-blue-900">12.</span> Flawed Student Draft (Khalid): 
+                        <span class="italic text-slate-600">"Oman people they like to go to the cinema more than art gallery by 4,300 person."</span>
+                        <span class="feedback-badge" id="fb12"></span>
+                    </p>
+                    <input type="text" id="q12" class="input-correction mt-2" placeholder="Rewrite corrected sentence here...">
+                    <div class="answer-reveal" id="rev12"></div>
+                </div>
+
+                <!-- Q13 -->
+                <div class="question-block" data-qid="13">
+                    <p class="font-medium text-slate-800">
+                        <span class="font-bold text-blue-900">13.</span> Flawed Student Draft (Ayah / Zahrah): 
+                        <span class="italic text-slate-600">"In Qatar, cinema attendance decreased and reached to 2,500 people."</span>
+                        <span class="feedback-badge" id="fb13"></span>
+                    </p>
+                    <input type="text" id="q13" class="input-correction mt-2" placeholder="Rewrite corrected sentence here...">
+                    <div class="answer-reveal" id="rev13"></div>
+                </div>
+
+                <!-- Q14 -->
+                <div class="question-block" data-qid="14">
+                    <p class="font-medium text-slate-800">
+                        <span class="font-bold text-blue-900">14.</span> Flawed Student Draft (Moad / Ragwa): 
+                        <span class="italic text-slate-600">"Art Gallery in Qatar was the highest on 4,400 persons."</span>
+                        <span class="feedback-badge" id="fb14"></span>
+                    </p>
+                    <input type="text" id="q14" class="input-correction mt-2" placeholder="Rewrite corrected sentence here...">
+                    <div class="answer-reveal" id="rev14"></div>
+                </div>
+
+                <!-- Q15 -->
+                <div class="question-block" data-qid="15">
+                    <p class="font-medium text-slate-800">
+                        <span class="font-bold text-blue-900">15.</span> Flawed Student Draft (ZamZam): 
+                        <span class="italic text-slate-600">"The number of people how go to the highest music shows is Bahrain."</span>
+                        <span class="feedback-badge" id="fb15"></span>
+                    </p>
+                    <input type="text" id="q15" class="input-correction mt-2" placeholder="Rewrite corrected sentence here...">
+                    <div class="answer-reveal" id="rev15"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ACTIVITY 4 -->
+        <section class="border border-slate-200 rounded-lg p-5 bg-white shadow-sm">
+            <div class="section-header">
+                <h2 class="font-bold text-blue-900 text-sm uppercase tracking-wider">Activity 4: Sentence Structure & Grammar Overhaul (Q16–Q20)</h2>
+                <p class="text-xs text-slate-600 mt-0.5">Instructions: Rewrite each broken student sentence to eliminate run-on clauses, double verbs, missing main verbs, and repetitive list structures.</p>
+            </div>
+
+            <div class="space-y-5 text-sm">
+                <!-- Q16 -->
+                <div class="question-block" data-qid="16">
+                    <p class="font-medium text-slate-800">
+                        <span class="font-bold text-blue-900">16.</span> Flawed Student Draft (Marwan): 
+                        <span class="italic text-slate-600">"The UAE the Cinema in UAE is most popular activities it's same Oman but lowst around 3,500 persons."</span>
+                        <span class="feedback-badge" id="fb16"></span>
+                    </p>
+                    <input type="text" id="q16" class="input-correction mt-2" placeholder="Rewrite corrected sentence here...">
+                    <div class="answer-reveal" id="rev16"></div>
+                </div>
+
+                <!-- Q17 -->
+                <div class="question-block" data-qid="17">
+                    <p class="font-medium text-slate-800">
+                        <span class="font-bold text-blue-900">17.</span> Flawed Student Draft (Khadija): 
+                        <span class="italic text-slate-600">"Art Gallery it about 2,400 people and Music shows is the lowest it about 2,000 person."</span>
+                        <span class="feedback-badge" id="fb17"></span>
+                    </p>
+                    <input type="text" id="q17" class="input-correction mt-2" placeholder="Rewrite corrected sentence here...">
+                    <div class="answer-reveal" id="rev17"></div>
+                </div>
+
+                <!-- Q18 -->
+                <div class="question-block" data-qid="18">
+                    <p class="font-medium text-slate-800">
+                        <span class="font-bold text-blue-900">18.</span> Flawed Student Draft (Maather): 
+                        <span class="italic text-slate-600">"In the UAE, the art gallery less than other countries and people like to do music shows was 3,000 person."</span>
+                        <span class="feedback-badge" id="fb18"></span>
+                    </p>
+                    <input type="text" id="q18" class="input-correction mt-2" placeholder="Rewrite corrected sentence here...">
+                    <div class="answer-reveal" id="rev18"></div>
+                </div>
+
+                <!-- Q19 -->
+                <div class="question-block" data-qid="19">
+                    <p class="font-medium text-slate-800">
+                        <span class="font-bold text-blue-900">19.</span> Flawed Student Draft (Moad): 
+                        <span class="italic text-slate-600">"After Bahrain is Oman around 4,300 person in cinema, after Oman is UAE 3,500 persons, then UAE is Qatar."</span>
+                        <span class="feedback-badge" id="fb19"></span>
+                    </p>
+                    <input type="text" id="q19" class="input-correction mt-2" placeholder="Rewrite corrected sentence here...">
+                    <div class="answer-reveal" id="rev19"></div>
+                </div>
+
+                <!-- Q20 -->
+                <div class="question-block" data-qid="20">
+                    <p class="font-medium text-slate-800">
+                        <span class="font-bold text-blue-900">20.</span> Flawed Student Draft (Khalid): 
+                        <span class="italic text-slate-600">"Qatar has the highest number of people go the art gallery it become the first country has large number in one activity."</span>
+                        <span class="feedback-badge" id="fb20"></span>
+                    </p>
+                    <input type="text" id="q20" class="input-correction mt-2" placeholder="Rewrite corrected sentence here...">
+                    <div class="answer-reveal" id="rev20"></div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Status & Submission Controls -->
+    <div id="completionNotice" class="no-print bg-amber-50 border border-amber-300 text-amber-900 p-3 rounded text-center text-sm font-medium mt-8 mb-4">
+        Please complete all questions before submitting. (<span id="answeredCount">0</span>/20 questions answered)
+    </div>
+
+    <div class="no-print flex justify-center items-center gap-4 pt-4 border-t border-slate-200">
+        <button id="submitBtn" onclick="evaluateWorksheet()" disabled class="bg-slate-300 text-slate-500 font-bold px-10 py-3 rounded-full cursor-not-allowed uppercase tracking-wider text-sm transition-all duration-200">
+            Submit Worksheet
+        </button>
+        <button id="printBtn" onclick="window.print()" class="hidden bg-slate-800 hover:bg-slate-900 text-white font-bold px-8 py-3 rounded-full uppercase tracking-wider text-sm transition-all duration-200">
+            Print / Save PDF
+        </button>
+    </div>
+</div>
+
+<script>
+    const inputs = [];
+    for (let i = 1; i <= 20; i++) {
+        inputs.push(document.getElementById(`q${i}`));
+    }
+    const submitBtn = document.getElementById('submitBtn');
+    const completionNotice = document.getElementById('completionNotice');
+    const answeredCountEl = document.getElementById('answeredCount');
+
+    // Answer Key & Evaluation Criteria from the Document
+    const rubric = {
+        1: {
+            target: "Overall, cinema attendance was highest in Oman (4,300), whereas in Qatar it was lower at 2,500.",
+            explanation: "Fixed static chart error: replaced time verbs 'going up / went down' with static comparison.",
+            validate: (val) => {
+                const s = val.toLowerCase();
+                const avoidsTrend = !s.includes("going up") && !s.includes("went down") && !s.includes("increased");
+                const hasComparison = s.includes("highest") || s.includes("higher") || s.includes("lower") || s.includes("stood at") || s.includes("recorded");
+                const mentionsNations = s.includes("oman") && s.includes("qatar");
+                return avoidsTrend && hasComparison && mentionsNations;
+            }
+        },
+        2: {
+            target: "Music shows recorded the highest figure in Bahrain, peaking at 5,000 people.",
+            explanation: "Fixed double verb 'showed an went up' and static chart error.",
+            validate: (val) => {
+                const s = val.toLowerCase();
+                const avoidsTrend = !s.includes("showed an went up") && !s.includes("went up");
+                const hasCorrectTerms = (s.includes("music") && s.includes("bahrain") && (s.includes("highest") || s.includes("peak") || s.includes("5,000") || s.includes("5000")));
+                return avoidsTrend && hasCorrectTerms;
+            }
+        },
+        3: {
+            target: "Cinema attendance was higher in Bahrain (4,500) than in Qatar (2,500).",
+            explanation: "Replaced 'steadily increased' (static error) with comparative adjective 'higher than'.",
+            validate: (val) => {
+                const s = val.toLowerCase();
+                const avoidsTrend = !s.includes("steadily increased") && !s.includes("increased");
+                const hasComparison = s.includes("higher") || s.includes("more than") || s.includes("exceeded");
+                return avoidsTrend && hasComparison && (s.includes("oman") || s.includes("bahrain") || s.includes("qatar"));
+            }
+        },
+        4: {
+            target: "Cinema attendance was higher in Oman, whereas music shows recorded lower figures.",
+            explanation: "Replaced time trend verbs 'increased / fell' with static comparative terms.",
+            validate: (val) => {
+                const s = val.toLowerCase();
+                const avoidsTrend = !s.includes("increased") && !s.includes("fell");
+                const hasComparison = s.includes("higher") || s.includes("lower") || s.includes("more") || s.includes("less") || s.includes("stood at");
+                return avoidsTrend && hasComparison;
+            }
+        },
+        5: {
+            target: "Overall, cinema and art gallery attendance were high across several nations.",
+            explanation: "Fixed static trend error 'shows an upward trend' and unit misuse.",
+            validate: (val) => {
+                const s = val.toLowerCase();
+                const avoidsTrend = !s.includes("upward trend") && !s.includes("percentage of cinema");
+                const hasGoodStructure = s.includes("cinema") && s.includes("art gallery") && (s.includes("attendance") || s.includes("popular") || s.includes("high") || s.includes("number"));
+                return avoidsTrend && hasGoodStructure;
+            }
+        },
+        6: {
+            target: "It can be seen clearly from the chart that cinema was popular in Bahrain, with about 4,500 people.",
+            explanation: "Replaced misused unit 'Percentage' with headcount term 'people'.",
+            validate: (val) => {
+                const s = val.toLowerCase();
+                const avoidsPercentage = !s.includes("percentage") && !s.includes("percent") && !s.includes("%");
+                const hasHeadcount = s.includes("people") || s.includes("persons") || s.includes("visitors") || s.includes("individuals");
+                return avoidsPercentage && hasHeadcount && s.includes("4,500");
+            }
+        },
+        7: {
+            target: "The number of people who prefer to spend their free time at the cinema is highest in most countries.",
+            explanation: "Replaced 'rates' with 'number of people' and fixed preposition 'at the cinema'.",
+            validate: (val) => {
+                const s = val.toLowerCase();
+                const avoidsRate = !s.startsWith("the rates") && !s.includes("rate of people");
+                const hasNumber = s.includes("number of people") || s.includes("proportion of people") || s.includes("count of people");
+                return avoidsRate && hasNumber;
+            }
+        },
+        8: {
+            target: "In Oman, cinema attendance was higher than art galleries at around 4,300 people, while music shows stood at 2,000 people.",
+            explanation: "Replaced 'percent' with 'people' and corrected preposition.",
+            validate: (val) => {
+                const s = val.toLowerCase();
+                const avoidsPercent = !s.includes("percent") && !s.includes("%");
+                const hasPeople = s.includes("people") || s.includes("persons");
+                const hasOman = s.includes("oman");
+                return avoidsPercent && hasPeople && hasOman;
+            }
+        },
+        9: {
+            target: "In Oman, more people prefer going to the cinema, with the figure clearly standing at 4,300.",
+            explanation: "Corrected spelling of 'Precent' to 'figure' / 'number'.",
+            validate: (val) => {
+                const s = val.toLowerCase();
+                const avoidsPrecent = !s.includes("precent") && !s.includes("percent");
+                const hasHeadcount = s.includes("figure") || s.includes("number") || s.includes("people") || s.includes("count");
+                return avoidsPrecent && hasHeadcount && s.includes("4,300");
+            }
+        },
+        10: {
+            target: "Music show attendance in Bahrain reached the highest overall figure at 5,000 people.",
+            explanation: "Corrected misread category (music shows, not art gallery) and replaced 'percent' with 'people'.",
+            validate: (val) => {
+                const s = val.toLowerCase();
+                const avoidsPercent = !s.includes("percent") && !s.includes("went up to 5,000 percent");
+                const hasPeople = s.includes("people") || s.includes("persons") || s.includes("visitors");
+                const hasBahrain = s.includes("bahrain") && (s.includes("music") || s.includes("5,000") || s.includes("5000"));
+                return avoidsPercent && hasPeople && hasBahrain;
+            }
+        },
+        11: {
+            target: "The number of persons who spend their free time at an art gallery was higher in Qatar.",
+            explanation: "Fixed relative pronoun: replaced 'how' with 'who' for people.",
+            validate: (val) => {
+                const s = val.toLowerCase();
+                const avoidsHow = !s.includes("persons how") && !s.includes("people how");
+                const usesWho = s.includes("who spend") || s.includes("who spent");
+                return avoidsHow && usesWho;
+            }
+        },
+        12: {
+            target: "People in Oman like to go to the cinema more than art galleries, at 4,300 people.",
+            explanation: "Fixed pronoun redundancy ('they') and preposition ('by 4,300 person' -> 'at 4,300 people').",
+            validate: (val) => {
+                const s = val.toLowerCase();
+                const avoidsRedundancy = !s.includes("people they like") && !s.includes("oman people they");
+                const fixedUnit = !s.includes("by 4,300 person") && (s.includes("people") || s.includes("persons"));
+                return avoidsRedundancy && fixedUnit;
+            }
+        },
+        13: {
+            target: "In Qatar, cinema attendance was lower, standing at 2,500 people.",
+            explanation: "Removed 'to' after 'reached' and fixed static trend verb 'decreased'.",
+            validate: (val) => {
+                const s = val.toLowerCase();
+                const avoidsReachedTo = !s.includes("reached to") && !s.includes("decreased and reached to");
+                const validStructure = s.includes("reached 2,500") || s.includes("standing at 2,500") || s.includes("was 2,500") || s.includes("at 2,500");
+                return avoidsReachedTo && validStructure;
+            }
+        },
+        14: {
+            target: "Art gallery attendance in Qatar was the highest, standing at 4,400 people.",
+            explanation: "Fixed preposition: 'on 4,400 persons' -> 'at 4,400 people'.",
+            validate: (val) => {
+                const s = val.toLowerCase();
+                const avoidsOn = !s.includes("on 4,400");
+                const usesAt = s.includes("at 4,400") || s.includes("with 4,400") || s.includes("standing at");
+                return avoidsOn && usesAt;
+            }
+        },
+        15: {
+            target: "The country with the highest music show attendance was Bahrain.",
+            explanation: "Fixed relative pronoun 'how' -> 'who' and corrected broken clause predicate.",
+            validate: (val) => {
+                const s = val.toLowerCase();
+                const avoidsHow = !s.includes("people how");
+                const logicalPredicate = !s.includes("music shows is bahrain") && s.includes("bahrain");
+                return avoidsHow && logicalPredicate;
+            }
+        },
+        16: {
+            target: "In the UAE, cinema was the most popular activity, similar to Oman but lower at around 3,500 people.",
+            explanation: "Fixed fused run-on sentence structure and spelling of 'lowst'.",
+            validate: (val) => {
+                const s = val.toLowerCase();
+                const avoidsSpelling = !s.includes("lowst") && !s.includes("the uae the cinema");
+                const fixedRunon = s.includes("uae") && s.includes("cinema") && (s.includes("most popular") || s.includes("lower"));
+                return avoidsSpelling && fixedRunon;
+            }
+        },
+        17: {
+            target: "Art gallery attendance stood at about 2,400 people, while music shows recorded the lowest figure at 2,000 people.",
+            explanation: "Fixed sentence fragment missing verbs ('it about').",
+            validate: (val) => {
+                const s = val.toLowerCase();
+                const avoidsFragment = !s.includes("gallery it about") && !s.includes("lowest it about");
+                const hasVerbs = s.includes("was") || s.includes("stood at") || s.includes("recorded") || s.includes("accounted for");
+                return avoidsFragment && hasVerbs;
+            }
+        },
+        18: {
+            target: "In the UAE, art gallery attendance was lower than in other countries, while music show attendance was 3,000 people.",
+            explanation: "Fixed missing verbs ('gallery less than') and awkward collocation ('do music shows').",
+            validate: (val) => {
+                const s = val.toLowerCase();
+                const avoidsCollocation = !s.includes("do music shows") && !s.includes("gallery less than");
+                const validSyntax = s.includes("uae") && (s.includes("music") || s.includes("art gallery"));
+                return avoidsCollocation && validSyntax;
+            }
+        },
+        19: {
+            target: "Cinema attendance was highest in Bahrain (4,500), followed by Oman (4,300), the UAE (3,500), and Qatar (2,500).",
+            explanation: "Replaced mechanical list structure ('After X is Y... Then X is Y') with academic flow.",
+            validate: (val) => {
+                const s = val.toLowerCase();
+                const avoidsMechanicalList = !s.includes("after bahrain is oman") && !s.includes("then uae is qatar");
+                const hasAcademicFlow = s.includes("followed by") || s.includes("highest in") || s.includes("ranked");
+                return avoidsMechanicalList && (hasAcademicFlow || s.includes("bahrain"));
+            }
+        },
+        20: {
+            target: "Qatar recorded the highest attendance for art galleries, becoming the top country for a single activity.",
+            explanation: "Fixed run-on clause, missing relative pronoun, and missing preposition ('go the art gallery').",
+            validate: (val) => {
+                const s = val.toLowerCase();
+                const avoidsBrokenClause = !s.includes("go the art gallery it become") && !s.includes("first country has large");
+                const hasConnectedSyntax = s.includes("qatar") && (s.includes("highest") || s.includes("art gallery") || s.includes("becoming"));
+                return avoidsBrokenClause && hasConnectedSyntax;
+            }
+        }
+    };
+
+    function trackCompletion() {
+        let count = 0;
+        inputs.forEach(input => {
+            if (input.value && input.value.trim().length > 0) {
+                count++;
+            }
+        });
+        answeredCountEl.innerText = count;
+
+        if (count === 20) {
+            submitBtn.disabled = false;
+            submitBtn.classList.remove('bg-slate-300', 'text-slate-500', 'cursor-not-allowed');
+            submitBtn.classList.add('bg-blue-800', 'hover:bg-blue-900', 'text-white', 'shadow-lg');
+            completionNotice.classList.remove('bg-amber-50', 'border-amber-300', 'text-amber-900');
+            completionNotice.classList.add('bg-emerald-50', 'border-emerald-300', 'text-emerald-900');
+            completionNotice.innerText = "All 20 questions completed! You may now submit your worksheet.";
+        } else {
+            submitBtn.disabled = true;
+            submitBtn.classList.add('bg-slate-300', 'text-slate-500', 'cursor-not-allowed');
+            submitBtn.classList.remove('bg-blue-800', 'hover:bg-blue-900', 'text-white', 'shadow-lg');
+            completionNotice.classList.add('bg-amber-50', 'border-amber-300', 'text-amber-900');
+            completionNotice.classList.remove('bg-emerald-50', 'border-emerald-300', 'text-emerald-900');
+            completionNotice.innerHTML = `Please complete all questions before submitting. (<span id="answeredCount">${count}</span>/20 questions answered)`;
+        }
+    }
+
+    inputs.forEach(input => {
+        input.addEventListener('input', trackCompletion);
+    });
+
+    function evaluateWorksheet() {
+        if (!confirm("Are you sure you want to submit? This activity allows one-time submission only.")) {
+            return;
+        }
+
+        let score = 0;
+
+        for (let i = 1; i <= 20; i++) {
+            const input = document.getElementById(`q${i}`);
+            const fb = document.getElementById(`fb${i}`);
+            const rev = document.getElementById(`rev${i}`);
+            const item = rubric[i];
+            const studentVal = input.value ? input.value.trim() : "";
+            const isCorrect = item.validate(studentVal);
+
+            fb.style.display = 'inline';
+            rev.style.display = 'block';
+
+            if (isCorrect) {
+                score++;
+                fb.innerHTML = '&#10003;';
+                fb.className = 'feedback-badge mark-correct';
+                rev.className = 'answer-reveal bg-emerald-50 border border-emerald-200 text-emerald-900';
+                rev.innerHTML = `<strong>Well Done!</strong> Correctly resolved.<br><span class="text-xs text-emerald-700"><strong>Target Model:</strong> "${item.target}"</span>`;
+            } else {
+                fb.innerHTML = '&#10007;';
+                fb.className = 'feedback-badge mark-incorrect';
+                rev.className = 'answer-reveal bg-red-50 border border-red-200 text-red-900';
+                rev.innerHTML = `<strong>Needs Correction:</strong> ${item.explanation}<br><span class="text-xs text-slate-700 mt-1 block"><strong>Model Answer:</strong> "${item.target}"</span>`;
+            }
+        }
+
+        // Performance Tier
+        let performance = "Needs Revision";
+        if (score >= 18) performance = "Band 8-9 (Mastery)";
+        else if (score >= 14) performance = "Band 6.5-7.5 (Competent)";
+        else if (score >= 10) performance = "Band 5.0-6.0 (Developing)";
+
+        // Display circular score
+        document.getElementById('scoreValue').innerText = `${score}/20`;
+        document.getElementById('headerScorePlaceholder').innerText = `${score} / 20`;
+        document.getElementById('performanceLevel').innerText = `${performance} (${Math.round((score / 20) * 100)}%)`;
+        document.getElementById('scoreModal').style.display = 'flex';
+
+        // Lock worksheet
+        document.getElementById('worksheetCard').classList.add('locked-form');
+        submitBtn.classList.add('hidden');
+        completionNotice.classList.add('hidden');
+        document.getElementById('printBtn').classList.remove('hidden');
+
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+</script>
+
+</body>
+</html>
